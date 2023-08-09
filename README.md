@@ -9,3 +9,9 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/cont
 2. Install skaffold and run the command: `skaffold dev`
 
 3. Open `http://kubernetes.docker.internal` in the host machine to access the application.
+
+# Miscellaneous
+
+## Shorten command line (bash) prompt
+
+Type `PS1='\u:\W\$ '` in the prompt and press enter.
