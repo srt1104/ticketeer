@@ -9,6 +9,7 @@ import {
 } from "@srt1104-tickets/common";
 
 import { createTicketRouter } from "./routes/create-ticket";
+import { getTicketRouter } from "./routes/get-ticket";
 
 const app = express();
 app.set("trust proxy", true);
@@ -21,6 +22,7 @@ app.use(
 app.use(currentUser);
 
 app.use(createTicketRouter);
+app.use(getTicketRouter);
 
 app.all("*", () => {
   throw new NotFoundError();
