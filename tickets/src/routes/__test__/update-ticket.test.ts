@@ -2,6 +2,7 @@ import request from "supertest";
 import mongoose from "mongoose";
 
 import { app } from "../../app";
+import { natsWrapper } from "../../nats-wrapper";
 
 it("returns a 401 if the user is not authenticated", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
@@ -93,4 +94,24 @@ it("updates the ticket provided valid inputs", async () => {
 
   expect(updatedResponse.body.title).toEqual(updatedTitle);
   expect(updatedResponse.body.price).toEqual(updatedPrice);
+});
+
+it("publishes an event", async () => {
+  const cookie = signin();
+
+  const response = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", cookie)
+    .send({ title: "valid", price: 20 })
+    .expect(201);
+
+  const updatedTitle = "valid updated title";
+  const updatedPrice = 100;
+  await request(app)
+    .put(`/api/tickets/${response.body.id}`)
+    .set("Cookie", cookie)
+    .send({ title: updatedTitle, price: updatedPrice })
+    .expect(200);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
