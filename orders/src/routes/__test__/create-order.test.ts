@@ -38,7 +38,7 @@ it("returns an error if the ticket is already reserved", async () => {
     .expect(400);
 });
 
-it("returns a ticket", async () => {
+it("reserves a ticket", async () => {
   const ticket = Ticket.build({
     title: "concert",
     price: 20,
