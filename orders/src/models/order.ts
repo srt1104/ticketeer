@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 import { OrderStatus } from "@srt1104-tickets/common";
 
 import { TicketDoc } from "./ticket";
@@ -44,7 +45,6 @@ const orderSchema = new mongoose.Schema(
   {
     toJSON: {
       transform(doc, ret) {
-        delete ret.__v;
         delete ret._id;
 
         ret.id = doc.id;
@@ -52,6 +52,7 @@ const orderSchema = new mongoose.Schema(
     },
   }
 );
+orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order(attrs);

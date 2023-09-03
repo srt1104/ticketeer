@@ -5,6 +5,7 @@ import {
   requireAuth,
   NotFoundError,
   NotAuthorizedError,
+  BadRequestError,
 } from "@srt1104-tickets/common";
 
 import { Ticket } from "../models/ticket";
@@ -32,6 +33,10 @@ router.put(
 
     if (ticket.userId !== req.currentUser!.id) {
       throw new NotAuthorizedError();
+    }
+
+    if (ticket.orderId) {
+      throw new BadRequestError("Cannot edit a reserved ticket");
     }
 
     ticket.set({ title: req.body.title, price: req.body.price });

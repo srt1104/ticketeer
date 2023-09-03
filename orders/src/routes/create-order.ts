@@ -65,6 +65,7 @@ router.post(
         id: ticket.id,
         price: ticket.price,
       },
+      __v: order.__v,
     });
 
     res.status(201).send(order);
