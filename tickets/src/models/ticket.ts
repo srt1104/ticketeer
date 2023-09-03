@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 interface TicketAttrs {
   title: string;
@@ -34,7 +35,6 @@ const ticketSchema = new mongoose.Schema(
   {
     toJSON: {
       transform(doc, ret) {
-        delete ret.__v;
         delete ret._id;
 
         ret.id = doc.id;
@@ -42,6 +42,7 @@ const ticketSchema = new mongoose.Schema(
     },
   }
 );
+ticketSchema.plugin(updateIfCurrentPlugin);
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket(attrs);
