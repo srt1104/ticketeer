@@ -8,6 +8,8 @@ import {
   currentUser,
 } from "@srt1104-tickets/common";
 
+import { createChargeRouter } from "./routes/create-charge";
+
 const app = express();
 app.set("trust proxy", true);
 app.use(json());
@@ -17,6 +19,8 @@ app.use(
 // must come after cookie-session middleware,
 // as `currentUser` requires `req.session` set by cookie-session to run
 app.use(currentUser);
+
+app.use(createChargeRouter);
 
 app.all("*", () => {
   throw new NotFoundError();
