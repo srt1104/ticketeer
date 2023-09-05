@@ -8,7 +8,7 @@ import {
   currentUser,
 } from "@srt1104-tickets/common";
 
-import { createChargeRouter } from "./routes/create-charge";
+import { createPaymentRouter } from "./routes/create-payment";
 
 const app = express();
 app.set("trust proxy", true);
@@ -20,7 +20,7 @@ app.use(
 // as `currentUser` requires `req.session` set by cookie-session to run
 app.use(currentUser);
 
-app.use(createChargeRouter);
+app.use(createPaymentRouter);
 
 app.all("*", () => {
   throw new NotFoundError();

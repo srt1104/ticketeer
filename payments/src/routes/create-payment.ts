@@ -12,6 +12,8 @@ import {
 import { stripe } from "../stripe";
 import { Order } from "../models/order";
 import { Payment } from "../models/payment";
+import { natsWrapper } from "../nats-wrapper";
+import { PaymentCreatedPublisher } from "../events/publishers/payment-created-publisher";
 
 const router = express.Router();
 
@@ -21,7 +23,7 @@ router.post(
   [body("token").not().isEmpty(), body("orderId").not().isEmpty()],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { token, orderId, description } = req.body;
+    const { token, orderId } = req.body;
 
     const order = await Order.findById(orderId);
 
@@ -36,16 +38,20 @@ router.post(
     }
 
     const charge = await stripe.charges.create({
-      currency: "usd",
+      currency: "inr",
       amount: order.price * 100,
       source: token,
-      description,
     });
     const payment = Payment.build({ orderId, stripeId: charge.id });
     await payment.save();
 
-    res.status(201).send({ success: true });
+    new PaymentCreatedPublisher(natsWrapper.client).publish({
+      id: payment.id,
+      orderId: payment.orderId,
+    });
+
+    res.status(201).send({ id: payment.id });
   }
 );
 
-export { router as createChargeRouter };
+export { router as createPaymentRouter };

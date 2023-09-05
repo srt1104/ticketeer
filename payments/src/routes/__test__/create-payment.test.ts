@@ -71,25 +71,21 @@ it("returns a 204 with valid inputs", async () => {
   });
   await order.save();
 
-  await request(app)
+  const response = await request(app)
     .post("/api/payments")
     .set("Cookie", signin(userId))
     .send({
       token: "tok_visa",
       orderId: order.id,
-      description:
-        "As per Indian regulations, export transactions require a description.",
     })
     .expect(201);
 
   const chargeOptions = (stripe.charges.create as jest.Mock).mock.calls[0][0];
-  expect(chargeOptions.currency).toEqual("usd");
+  expect(chargeOptions.currency).toEqual("inr");
   expect(chargeOptions.amount).toEqual(100 * 100);
   expect(chargeOptions.source).toEqual("tok_visa");
-  expect(chargeOptions.description).toEqual(
-    "As per Indian regulations, export transactions require a description."
-  );
 
   const payment = await Payment.findOne({ orderId: order.id });
   expect(payment).not.toBeNull();
+  expect(response.body.id).toEqual(payment?.id);
 });
